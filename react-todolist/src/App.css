@@ -1,0 +1,115 @@
+
+body {
+	margin: 0;
+	padding: 0;
+	width: 1366px;
+}
+
+/*背景模糊*/
+.bg {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background: url("img/bg.jpg") no-repeat fixed;
+	padding: 1px;
+	box-sizing: border-box;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-o-background-size: cover;
+	z-index: 1;
+}
+
+.bg:after {
+	content: "";
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: inherit;
+	filter: blur(3px);
+	z-index: 2;
+}
+
+.content {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 75%;
+	height: 550px;
+	background-color: #FCFCFC;
+	/*text-align: center;*/
+	z-index: 3;
+	padding: 10px;
+	border: 4px solid #FFF8DC;
+	-moz-border-radius: 30px;
+	-webkit-border-radius: 30px;
+	border-radius: 30px;
+}
+
+.left-menu {
+	width: 140px;
+	position: absolute;
+	left: 5%;
+	top: 50%;
+	transform: translate(0, -50%);
+	display: inline-block;
+}
+
+.editor {
+	width: 70%;
+	height: 100%;
+	margin-right: 5%;
+	padding-left: 5%;
+	border-left: solid;
+	border-color: #C1E2B3;
+	border-left-width: thin;
+	display: inline-block;
+	float: right;
+}
+
+.icon {
+	width: 58px;
+}
+.add-task{
+	width: 100%;
+}
+.options{
+	float: right;
+}
+/* 弹窗 (background) */
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定定位 */
+    z-index: 1; /* 设置在顶层 */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    overflow: auto; 
+}
+
+/* 弹窗内容 */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+}
+
+/* 关闭按钮 */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
