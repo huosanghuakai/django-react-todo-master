@@ -9,6 +9,6 @@
 * 待办事项可以设置优先级
 * 待办事项可以设置expire date
 
-![image](https://github.com/huosanghuakai/django-react-todo-master/master/2018-08-05_22-46-36.gif)
-![image](https://github.com/huosanghuakai/django-react-todo-master/master/2018-08-05_22-32-34.gif)
-![image](https://github.com/huosanghuakai/django-react-todo-master/master/2018-08-05_22-37-34.gif)
+![image](https://github.com/huosanghuakai/django-react-todo-master/blob/master/2018-08-05_22-46-36.gif)
+![image](https://github.com/huosanghuakai/django-react-todo-master/blob/master/2018-08-05_22-32-34.gif)
+![image](https://github.com/huosanghuakai/django-react-todo-master/blob/master/2018-08-05_22-37-34.gif)
