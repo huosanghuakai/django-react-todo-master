@@ -1,81 +1,73 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import KanbanBoard from './KanbanBoard';
-import update from 'react-addons-update'
 import 'whatwg-fetch';
 import 'babel-polyfill'
+import update from 'react-addons-update';
 
-const API_URL = "http://127.0.0.1:8000/";
+const API_URL="http://kanbanapi.pro-react.com";
 const API_HEADERS={
-  'accept':'application/json',
+  'Content-Type':'application/json',
+  Authorization:'wsl'
 };
 
 class App extends Component{
   constructor() {
     super(...arguments);
     this.state = {
-      tasks:[]
+      cards:[]
     };
   }
-
+  
   componentDidMount(){
-    fetch(API_URL+'myapp/',{
-        method: "GET",
-        mode: "cors",
-        headers: API_HEADERS
-    })
+    fetch(API_URL+'/cards',{headers:API_HEADERS})
     .then((response)=>response.json())
     .then((responseData)=>{
-      this.setState({tasks:responseData});
+      this.setState({cards:responseData});
       window.state=this.state;
     });
   }
-  ID2(prefix) {
-    return (prefix || '') + new Date().getTime().toString(36) + Math.random().toString(36).slice(2);
-  }
   
-  addTask(content,expire_date,priority){
+  addTask(cardId,taskName){
     let prevState = this.state;
-    let newTask={task_id:27,content:content,status:false,expire_date:'2015-08-01',priority:priority};
-    let nextState=update(this.state.tasks,{$push:[newTask]});
-    alert(JSON.stringify(nextState));
-    fetch(API_URL+'myapp/',{
-      method:'POST',
-      mode:'cors',
+    let cardIndex=this.state.cards.findIndex((card)=>card.id===cardId);
+    let newTask={id:Date.now(),name:taskName,done:false};
+    let nextState=update(this.state.cards,{
+      [cardIndex]:{
+        tasks:{$push:[newTask]}
+      }
+    });
+    this.setState({cards:nextState});
+    fetch('${API_URL}/cards/${cardId}/tasks/${taskId}',{
+      method:'post',
       headers:API_HEADERS,
-      body:JSON.stringify(newTask)
+      body:JSON.stringify({done:newTask})
     })
     .then((response)=>{
-       console.log(response);
       if(response.ok){
-        this.setState({tasks:nextState});
-        console.log("response.ok");
         return response.json()
       }else{
-        console.log("Server response wasn't OK");
         throw new Error("Server response wasn't OK")
       }
     })
     .then((responseData)=>{
-      console.log("responseData");
-      newTask.id=responseData.task_id;
-      this.setState({tasks:nextState})
+      newTask.id=responseData.id;
+      this.setState({cards:nextState})
     }).catch((error)=>{
-      console.log("prevState");
       this.setState(prevState);
     });
   }
   
-  deleteTask(taskId){
+  deleteTask(cardId,taskId,taskIndex){
     let prevState =this.state;
-    let taskIndex=this.state.tasks.findIndex((task)=>task.task_id===taskId);
-    
-    alert(this.state.tasks[0]);
-    let nextState=update(this.state.tasks,{$splice:[[taskIndex,1]]});
-    this.setState({tasks:nextState});
-    
-    fetch(API_URL+'myapp/'+taskId+'/',{
+    let cardIndex=this.state.cards.findIndex((card)=>card.id===cardId);
+    let nextState=update(this.state.cards,{
+      [cardIndex]:{
+        tasks:{$splice:[[taskIndex,1]]}
+      }
+    });
+    this.setState({cards:nextState});
+    fetch('${API_URL}/cards/${cardId}/tasks/${taskId}',{
           method:'delete',
-          mode:'cors',
           headers:API_HEADERS
     }).then((response)=>{
       if(!response.ok){
@@ -87,29 +79,27 @@ class App extends Component{
     });
   }
   
-  toggleTask(taskId){
+  toggleTask(cardId,taskId,taskIndex){
     let prevState=this.state;
-    let taskIndex=this.state.tasks.findIndex((task)=>task.task_id===taskId);
-    alert(taskIndex);
-    let task=this.state.tasks.filter((task)=>task.task_id===taskId);
-    let updateTask=task[0];
+    let cardIndex=this.state.cards.findIndex((card)=>card.id===cardId);
     let newDoneValue;
-    let nextState=update(this.state.tasks,{
-        [taskIndex]:{status:{$apply:(done)=>{
-                    newDoneValue=!done;
-                    return newDoneValue;
-                }
-            }
+    let nextState=update(this.state.cards,{
+      [cardIndex]:{
+        tasks:{
+          [taskIndex]:{
+            done:{$apply:(done)=>{
+              newDoneValue=!done;
+              return newDoneValue;
+            }}
+          }
         }
+      }
     });
-    updateTask['status']=newDoneValue;
-    alert(JSON.stringify(updateTask));
-    this.setState({tasks:nextState});
-    fetch(API_URL+'myapp/'+taskId+'/',{
+    this.setState({cards:nextState});
+    fetch('${API_URL}/cards/${cardId}/tasks/${taskId}',{
       method:'put',
-      mode:'cors',
       headers:API_HEADERS,
-      body:JSON.stringify(updateTask)
+      body:JSON.stringify({done:newDoneValue})
     }).then((response)=>{
       if(!response.ok){
         throw new Error("Server response wasn't OK");
@@ -119,41 +109,16 @@ class App extends Component{
       this.setState(prevState);
     });
   }
-  
-  editTask(taskId,expire_time,content,priority){
-    let prevState=this.state;
-    let taskIndex=this.state.tasks.findIndex((task)=>task.task_id===taskId);
-    let newTask={task_id:taskId,content:content,status:false,expire_date:expire_time,priority:priority};
-    let nextState=update(this.state.tasks,{$splice:[[taskIndex,1,newTask]]});
-    //alert(JSON.stringify(this.state.tasks));
-    this.setState({tasks:nextState});
-    alert(JSON.stringify(nextState));
-    fetch(API_URL+'myapp/'+taskId+'/',{
-      method:'put',
-      mode:'cors',
-      headers:API_HEADERS,
-      body:JSON.stringify(newTask)
-    }).then((response)=>{
-        alert(response.json());
-      if(!response.ok){
-          
-        throw new Error("Server response wasn't OK");
-      }
-    }).catch((error)=>{
-      console.error("Fetch error:",error);
-      this.setState(prevState);
-    });
-  }
+
   render() {
-      
-    return (<KanbanBoard tasks={this.state.tasks} taskCallbacks={{
-        add:this.addTask.bind(this),
-        toggle:this.toggleTask.bind(this),
-        delete:this.deleteTask.bind(this),
-        edit:this.editTask.bind(this),
-    }}/>)
+    return (<KanbanBoard cards={this.state.cards} 
+        taskCallbacks={{
+          toggle:this.toggleTask.bind(this),
+          delete:this.deleteTask.bind(this),
+          add:this.addTask.bind(this)
+        }}
+      />)
   }
 }
-
 
 export default App;

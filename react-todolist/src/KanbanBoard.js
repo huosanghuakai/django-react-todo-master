@@ -1,32 +1,29 @@
-import React, {Component,PropTypes} from 'react';
-import AddTask from './AddTask';
-import TaskList from './TaskList';
-import './App.css';
-class KanbanBoard extends Component {
+import React, {Component} from 'react';
+import List from './List';
+import PropTypes from 'prop-types';
 
-render(){
-  return (
-    <div className='bg'>
-        <div className='content'>
-            <ul className="nav nav-pills nav-stacked left-menu">
-				<li>
-					<a href="#">View all</a>
-				</li>
-				<li>
-					<a href="#">Expire time</a>
-				</li>
-				<li>
-					<a href="#">Priority</a>
-				</li>
-			</ul>
-          <div className="editor">
-            <AddTask tasks={this.props.tasks} taskCallbacks={this.props.taskCallbacks}/>
-            <TaskList tasks={this.props.tasks} taskCallbacks={this.props.taskCallbacks}/>
-          </div>
-        </div>
-    </div>
-  )
+class KanbanBoard extends Component{
+	render() {
+		return (
+			<div className="app">
+				<List id='todo' tittle="TO DO" taskCallbacks={this.props.taskCallbacks}
+					cards={
+					this.props.cards.filter((card) =>card.status==='todo')
+				} cardCallbacks={this.props.cardCallbacks}/>
+				<List id='in-progress' tittle="In Progress" taskCallbacks={this.props.taskCallbacks}
+					cards={
+					this.props.cards.filter((card) =>card.status==='in-progress')
+				} cardCallbacks={this.props.cardCallbacks}/>
+				<List id='done' tittle="Done" taskCallbacks={this.props.taskCallbacks}
+					cards={
+					this.props.cards.filter((card) =>card.status==='done')
+				} cardCallbacks={this.props.cardCallbacks}/>
+			</div>
+		);
+	}		
 }
+KanbanBoard.propTypes = {
+	  cards: PropTypes.arrayOf(PropTypes.object),
+	  taskCallbacks:PropTypes.object,
 }
-
 export default KanbanBoard;
