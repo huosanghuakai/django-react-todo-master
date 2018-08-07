@@ -3,12 +3,20 @@ import './App.css';
 import $ from 'jquery'
 class TaskList extends Component {
 
+constructor() {
+	super(...arguments);
+	this.state = {
+        csl:'text',
+	};
+}
+
 checkOnClick(taskId){
     let modal = document.getElementById('myModal');
     let span = document.querySelector('.close');
-    let save = document.querySelector('#edit');
-    modal.style.display = "block";
+    let save = document.getElementById('edit');
     
+    var flag=false;
+    modal.style.display = "block";
     span.onclick = function() {
         modal.style.display = "none";
     }
@@ -17,31 +25,27 @@ checkOnClick(taskId){
             modal.style.display = "none";
         }
     }
-    var content = document.getElementById("content").value;
-    var expire_time = document.getElementById("expire_time").value;         
-    var priority = $("input[name='prio']:checked").val();
-    var flag=false;
-    save.onclick = function() {
-        flag=true;
+    save.onclick=()=>{
+        let content = document.getElementById("task_content").value;
+        let expire_time = document.getElementById("expire_time").value;         
+        let priority = $("input[name='prio']:checked").val();
+        this.props.taskCallbacks.edit(taskId,expire_time,content,priority);
         modal.style.display = "none";
     }
-    if(flag)
-        this.props.taskCallbacks.edit(taskId,expire_time,content,priority);
-    
+        
 }
 
 render(){
   let tasks = this.props.tasks.map((task) => (
             <tr>
 				<td className="icon">
-					<a href="#"><span className="glyphicon glyphicon-ok-circle" onClick={
-                        this.props.taskCallbacks.toggle.bind(null,task.task_id)
+					<a href="#"><span className="glyphicon glyphicon-ok-circle"
+                        onClick={this.props.taskCallbacks.toggle.bind(null,task.task_id)
                     }></span></a>
 				</td>
-				<td className="task-text" id={task.task_id}><span className="text">{task.content} {task.task_id}</span></td>
+				<td className="task-text" id={task.task_id}><span className={this.state.csl}>{task.content}</span></td>
 				<td className="icon">
-					<a href="#" id={task.id}><span className="glyphicon glyphicon-edit" onClick={
-                        this.checkOnClick.bind(this,task.task_id)}>
+					<a href="#" id={task.id}><span className="glyphicon glyphicon-edit" onClick={ this.checkOnClick.bind(this,task.task_id)}>
                     编辑</span></a>
 				</td>
 				<td className="icon">
@@ -65,7 +69,7 @@ render(){
             <form className="form-horizontal add-task" id="add" role="form">
             <div className="form-group">
                 <div className="col-sm-12">
-                    <input type="text" className="form-control" id="content" placeholder="请输入新任务"/>
+                    <input type="text" className="form-control" id="task_content" placeholder="请输入新任务"/>
                 </div>
             </div>
             <div className="form-group">
